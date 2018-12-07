@@ -49,20 +49,20 @@
 		d3.csv("resume_words3.csv", function(error, words) {
 		
 			var svg = d3.select("body").append("svg")
-				.attr("width", 1900)
-        		.attr("height", 1200);
+				.attr("width", 1425)
+        		.attr("height", 900);
 
         	var colorScale = d3.scaleSequential(d3.interpolateViridis).domain([5,0]);
 
-			var xscale = d3.scaleLinear().domain([0,19]).range([0, 400]);
-      		var yscale = d3.scaleLinear().domain([0,33]).range([0, 800]);
-      		var degreeify = d3.scaleLinear().domain([0,16]).range([8,25]);
+			var xscale = d3.scaleLinear().domain([0,19]).range([0, 300]);
+      		var yscale = d3.scaleLinear().domain([0,33]).range([0, 600]);
+      		var degreeify = d3.scaleLinear().domain([0,16]).range([6,18.75]);
 
-      		var xCenter = [825, 825, 250, 1300, 825];
-			var yCenter = [-50, 600, 325, 200, 240];
+      		var xCenter = [630, 640, 187.5, 975, 640];
+			var yCenter = [-70, 450, 243.75, 150, 150];
 
-			var textX = [850, 720, 720, 777, 1050, 1129, 1255, 750, 840, 230, 1310, 810, 1280];
-			var textY = [200, 325, 375, 375, 375, 375, 375, 30, 540, 140, 90, 270, 840];
+			var textX = [637.5, 540, 540, 582.75, 787.5, 846.75, 941.25, 562.5, 630, 176, 978, 607.5, 960];
+			var textY = [150, 243.75, 281.25, 281.25, 281.25, 281.25, 281.25, 16.5, 387.5, 102, 67.5, 192.5, 630];
 
 			var text_data = ["This is my resume.", "Broken down, word by word,", "by", "importance", "and", "subject", ".", "Name, Contact Info, References", "Education", "Professional Experience", "Projects", "Technical Skills", "@champebarton"];
 
@@ -90,11 +90,11 @@
         	  .append('circle')
       			.attr('cx',function (d) { 
       				var xpos = normalizeX(d.id);
-      				return 130 + xscale(xpos); 
+      				return 97.5 + xscale(xpos); 
       			})
       			.attr('cy',function (d) { 
       				var ypos = normalizeY(d.id);
-      				return 40 + yscale(ypos); 
+      				return 30 + yscale(ypos); 
       			})
       			.attr('r', 0.1)
         		.attr('fill', "rgba(0,0,0,0)")
@@ -125,36 +125,36 @@
       		  		return text_posX;
       		  	})
       		  	.attr('y', function(d,i){
-      		  		text_posY = 10 + textY[i];
+      		  		text_posY = 7.5 + textY[i];
       		  		return text_posY;
       		  	})
       		  	.attr('font-family', "sans-serif")
-      		  	.attr('font-size', "25px")
+      		  	.attr('font-size', "18.75px")
       		  	.attr('font-weight', 900)
       		  	.attr('fill', "rgba(0,0,0,0)");
       		 
       		d3.select("text")
-      		    .attr('font-size', "60px")
+      		    .attr('font-size', "45px")
       		 	.transition().duration(400).delay(700)
       		 	.attr('fill', "#171d22");
 
       		d3.selectAll("text")
       			.filter(function(d, i){return i == 1 || i == 2 || i == 4 || i == 6; })
-      			.attr('font-size', "40px")
+      			.attr('font-size', "30px")
       			.attr('font-weight', 400)
       			.transition().duration(400).delay(1000)
       		 	.attr('fill', "#171d22");
 
       		d3.selectAll("text")
       			.filter(function(d, i){return i == 5; })
-      			.attr('font-size', "40px")
+      			.attr('font-size', "30px")
       			.attr('font-weight', 400)
       			.transition().duration(400).delay(1000)
       		 	.attr('fill', "#683874");
 
       		d3.selectAll("text")
       			.filter(function(d, i){return i == 3; })
-      			.attr('font-size', "48px")
+      			.attr('font-size', "36px")
       			.transition().duration(400).delay(1000)
       		 	.attr('fill', "#171d22");
 
@@ -174,8 +174,8 @@
       						else {return "#171d22";}
       				})
       				.attr("font-size", function(d, i) {
-      					if(i == 12) {return "50px";}
-      						else {return "25px"}
+      					if(i == 12) {return "37.5px";}
+      						else {return "18.75px"}
       				});
 
 	      		var simulation = d3.forceSimulation(nodes)
@@ -230,10 +230,10 @@
 		          	return degreeify(d.radius);
 		          })
 		          .attr('cx', function(d) {
-		            return 100 + d.x;
+		            return 75 + d.x;
 		          })
 		          .attr('cy', function(d) {
-		            return 150 + d.y;
+		            return 112.5 + d.y;
 		          });
 
 		        u.exit().remove();
