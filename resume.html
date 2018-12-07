@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<link href="https://fonts.googleapis.com/css?family=Roboto:400,900" rel="stylesheet">
+	<style>
+		/* default / demo page */
+		* {
+			box-sizing: border-box;
+		}
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+/*			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;*/
+			font-family: 'Roboto', sans-serif;
+		}
+		body {
+			min-height: 1280px;
+			font-weight: 300;
+			color: #2a2a2a;
+		}
+		p,
+		h1,
+		h2,
+		h3,
+		h4,
+		a {
+			margin: 0;
+			font-weight: 300;
+		}
+		a,
+		a:visited,
+		a:hover {
+			color: #f30;
+			text-decoration: none;
+			border-bottom: 1px solid currentColor;
+		}
+	</style>
+
+</head>
+
+<body>
+	<script src='https://d3js.org/d3.v4.min.js'></script>
+	<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+	<script src='https://unpkg.com/intersection-observer'></script>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/scrollama/1.4.1/scrollama.min.js'></script>
+	<script>
+		d3.csv("resume_words3.csv", function(error, words) {
+		
+			var svg = d3.select("body").append("svg")
+				.attr("width", 1900)
+        		.attr("height", 1200);
+
+        	var colorScale = d3.scaleSequential(d3.interpolateViridis).domain([5,0]);
+
+			var xscale = d3.scaleLinear().domain([0,19]).range([0, 400]);
+      		var yscale = d3.scaleLinear().domain([0,33]).range([0, 800]);
+      		var degreeify = d3.scaleLinear().domain([0,16]).range([8,25]);
+
+      		var xCenter = [825, 825, 250, 1300, 825];
+			var yCenter = [-50, 600, 325, 200, 240];
+
+			var textX = [850, 720, 720, 777, 1050, 1129, 1255, 750, 840, 230, 1310, 810, 1280];
+			var textY = [200, 325, 375, 375, 375, 375, 375, 30, 540, 140, 90, 270, 840];
+
+			var text_data = ["This is my resume.", "Broken down, word by word,", "by", "importance", "and", "subject", ".", "Name, Contact Info, References", "Education", "Professional Experience", "Projects", "Technical Skills", "@champebarton"];
+
+			words.forEach(function(d) {
+				d.importance = +d.importance;
+				d.group = +d.group;
+				d.code = +d.code;
+				d.id = +d.id;
+			});
+
+			// var numNodes = 660;
+			var nodes = words.map(function(d,i) {
+			// console.log(d.importance);
+				return {
+			  		radius: d.importance,
+			  		category: d.group,
+			  		id: d.id,
+			  		code: d.code
+				}
+			});
+
+        	var circles = svg.selectAll("circle")
+        		.data(nodes)
+        		.enter()
+        	  .append('circle')
+      			.attr('cx',function (d) { 
+      				var xpos = normalizeX(d.id);
+      				return 130 + xscale(xpos); 
+      			})
+      			.attr('cy',function (d) { 
+      				var ypos = normalizeY(d.id);
+      				return 40 + yscale(ypos); 
+      			})
+      			.attr('r', 0.1)
+        		.attr('fill', "rgba(0,0,0,0)")
+        		.attr('fill-opacity', 0.8);
+
+        	d3.selectAll("circle")
+	    		.transition().duration(800)
+		    		.attr('fill', function (d) { 
+	        			var color = colorScale(d.code);
+	        			return color; 
+	        		})
+	        		.attr('r', function (d){
+      					var size = degreeify(d.radius);
+      					return size;
+      				});
+
+      		var text = svg.selectAll("text")
+      			.data(text_data)
+      			.enter()
+      		  .append("text")
+      		  	.text(function(d) {
+      		  		// console.log(d);
+      		  		return d;})
+      		  	.attr('x', function(d,i){
+      		  		// console.log(i);
+      		  		// console.log(textX[i]);
+      		  		text_posX = textX[i];
+      		  		return text_posX;
+      		  	})
+      		  	.attr('y', function(d,i){
+      		  		text_posY = 10 + textY[i];
+      		  		return text_posY;
+      		  	})
+      		  	.attr('font-family', "sans-serif")
+      		  	.attr('font-size', "25px")
+      		  	.attr('font-weight', 900)
+      		  	.attr('fill', "rgba(0,0,0,0)");
+      		 
+      		d3.select("text")
+      		    .attr('font-size', "60px")
+      		 	.transition().duration(400).delay(700)
+      		 	.attr('fill', "#171d22");
+
+      		d3.selectAll("text")
+      			.filter(function(d, i){return i == 1 || i == 2 || i == 4 || i == 6; })
+      			.attr('font-size', "40px")
+      			.attr('font-weight', 400)
+      			.transition().duration(400).delay(1000)
+      		 	.attr('fill', "#171d22");
+
+      		d3.selectAll("text")
+      			.filter(function(d, i){return i == 5; })
+      			.attr('font-size', "40px")
+      			.attr('font-weight', 400)
+      			.transition().duration(400).delay(1000)
+      		 	.attr('fill', "#683874");
+
+      		d3.selectAll("text")
+      			.filter(function(d, i){return i == 3; })
+      			.attr('font-size', "48px")
+      			.transition().duration(400).delay(1000)
+      		 	.attr('fill', "#171d22");
+
+      		d3.timeout( function() {
+
+      			d3.selectAll("text")
+      				.filter(function(d, i){return i == 0 || i == 1 || i == 2 || i == 3 || i == 4 || i == 5 || i == 6; })
+      				.transition().duration(400)
+      				.attr("fill", "rgba(0,0,0,0)");
+
+      			d3.selectAll("text")
+      				.transition().duration(400).delay(function(d, i) {
+      					return i*800;
+      				})
+      				.attr("fill", function(d, i){
+      					if(i==0 || i == 1 || i == 2 || i == 3 || i == 4 || i == 5 || i == 6) {return "rgba(0,0,0,0)";}
+      						else {return "#171d22";}
+      				})
+      				.attr("font-size", function(d, i) {
+      					if(i == 12) {return "50px";}
+      						else {return "25px"}
+      				});
+
+	      		var simulation = d3.forceSimulation(nodes)
+			        .force('charge', d3.forceManyBody().strength(5))
+			        .force('x', d3.forceX().x(function(d) {
+			          // console.log(d.category);
+			          return xCenter[d.category];
+			        }))
+			        .force('y', d3.forceY().y(function(d) {
+			          return yCenter[d.category];
+			        }))
+			        .force('collision', d3.forceCollide().radius(function(d) {
+			          return degreeify(d.radius)+2;
+			        }))
+			        .on('tick', ticked);
+
+		    }, 10000);
+
+		    d3.selectAll("text")
+      			.filter(function(d, i) {
+      				console.log("hi there");
+      				return i == 12; 
+      			})
+      			.on("click", function(d) { 
+      				console.log("you clicked me!");
+      				window.open("http://twitter.com/champebarton"); 
+      			});
+
+    	    function normalizeX(num) {
+      			pos = num % 20;
+      			return pos;
+      		};
+
+      		function normalizeY(num) {
+      			pos = Math.floor(num/20);
+      			return pos;
+      		};
+
+      		function ticked() {
+		        var u = d3.selectAll('circle')
+
+		        u.enter()
+		          .merge(u)
+		          .transition().delay(function(d,i){
+              		var num = i*0 + d.category;
+              		if (num == 0) {return (num+1)*800;}
+              		else {
+  						return num*900;
+              		}
+            	  })
+		          .attr('r', function(d) {
+		          	return degreeify(d.radius);
+		          })
+		          .attr('cx', function(d) {
+		            return 100 + d.x;
+		          })
+		          .attr('cy', function(d) {
+		            return 150 + d.y;
+		          });
+
+		        u.exit().remove();
+		      }
+
+      	});
+
+
+
+	</script>
+</body>
+
+</html>
